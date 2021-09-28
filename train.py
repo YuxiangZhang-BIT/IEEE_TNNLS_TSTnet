@@ -19,13 +19,13 @@ parser = argparse.ArgumentParser(description='PyTorch TSTnet')
 
 parser.add_argument('--save_path', type=str, default="./results/",
                     help='the path to save the model')
-parser.add_argument('--data_path', type=str, default='./datasets/HyRank/',
+parser.add_argument('--data_path', type=str, default='./datasets/Houston/',
                     help='the path to load the data')
 parser.add_argument('--log_path', type=str, default='./logs',
                     help='the path to load the data')
-parser.add_argument('--source_name', type=str, default='Dioni',
+parser.add_argument('--source_name', type=str, default='Houston13',
                     help='the name of the source dir')
-parser.add_argument('--target_name', type=str, default='Loukia',
+parser.add_argument('--target_name', type=str, default='Houston18',
                     help='the name of the test dir')
 parser.add_argument('--cuda', type=int, default=0,
                     help="Specify CUDA device (defaults to -1, which learns on CPU)")
@@ -208,16 +208,14 @@ if __name__ == '__main__':
         gt_src=np.pad(gt_src,((r,r),(r,r)),'constant',constant_values=(0,0))
         gt_tar=np.pad(gt_tar,((r,r),(r,r)),'constant',constant_values=(0,0))     
 
-        train_gt_src, val_gt_src, training_set, valing_set = sample_gt(gt_src, args.training_sample_ratio, mode='random')
+        train_gt_src, _, training_set, _ = sample_gt(gt_src, args.training_sample_ratio, mode='random')
         test_gt_tar, _, tesing_set, _ = sample_gt(gt_tar, 1, mode='random')
         train_gt_tar, _, _, _ = sample_gt(gt_tar, training_sample_tar_ratio, mode='random')
         img_src_con, img_tar_con, train_gt_src_con, train_gt_tar_con = img_src, img_tar, train_gt_src, train_gt_tar
-        val_gt_src_con = val_gt_src
         if tmp < 1:
             for i in range(args.re_ratio-1):
                 img_src_con = np.concatenate((img_src_con,img_src))
                 train_gt_src_con = np.concatenate((train_gt_src_con,train_gt_src))
-                val_gt_src_con = np.concatenate((val_gt_src_con,val_gt_src))
                 # img_tar_con = np.concatenate((img_tar_con,img_tar))
                 # train_gt_tar_con = np.concatenate((train_gt_tar_con,train_gt_tar))
         
@@ -233,12 +231,6 @@ if __name__ == '__main__':
                                         worker_init_fn=seed_worker,
                                         generator=g,
                                         shuffle=True)
-        val_dataset = HyperX(img_src_con, val_gt_src_con, **hyperparams)
-        val_loader = data.DataLoader(val_dataset,
-                                        pin_memory=True,
-                                        worker_init_fn=seed_worker,
-                                        generator=g,
-                                        batch_size=hyperparams['batch_size'])
         train_tar_dataset = HyperX(img_tar_con, train_gt_tar_con, **hyperparams)
         train_tar_loader = data.DataLoader(train_tar_dataset,
                                         pin_memory=True,
@@ -258,13 +250,12 @@ if __name__ == '__main__':
         len_tar_train_dataset = len(train_tar_loader.dataset)
         len_tar_dataset = len(test_loader.dataset)
         len_tar_loader = len(test_loader)
-        len_val_dataset = len(val_loader.dataset)
-        len_val_loader = len(val_loader)
+
         print(hyperparams)
         print("train samples :",len_src_dataset)
         print("train tar samples :",len_tar_train_dataset)
 
-        correct, val_correct, val_max_test, acc, val_loss = 0, 0, 0, 0, 10
+        correct, acc = 0, 0
         model_TST = TSTnet.Feature_Extractor(img_src.shape[-1],num_classes=gt_src.max(), patch_size=hyperparams['patch_size']).to(DEVICE)
 
         now_time = datetime.now()
