@@ -65,7 +65,7 @@ datasets
 
 1.You can download [HyRANK](https://zenodo.org/record/1222202) dataset here. And then unrar dataset in ./dataset/.
 
-2.You can change the source_name and target_name in train.py to set different transfer tasks.
+2.You can change the `source_name` and `target_name` in train.py to set different transfer tasks.
 
 3.Run python train.py.
 
