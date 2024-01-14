@@ -1,5 +1,10 @@
 # Topological Structure and Semantic Information Transfer Network for Cross-Scene Hyperspectral Image Classification
 
+## Update 01/2024: TSTnet won the Highly Cited Paper.
+<p align='center'>
+  <img src='figure/TSTnet-ESI.png' width="800px">
+</p>
+
 Paper web page: [Topological Structure and Semantic Information Transfer Network for Cross-Scene Hyperspectral Image Classification](https://ieeexplore.ieee.org/document/9540028).
 
 Reading [知乎-Yammo](https://zhuanlan.zhihu.com/p/550491893)
